@@ -1,0 +1,17 @@
+[package]
+name = "grpc-benchmark"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+yellowstone-grpc-client = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread"] }
+yellowstone-grpc-proto = { workspace = true }
+solana-client = { workspace = true }
+log = { workspace = true }
+pretty_env_logger = { workspace = true }
+dotenvy = { workspace = true }
+chrono = { workspace = true }
+futures-util = { workspace = true }
+tokio-stream = { workspace = true }
+grpc-client = { path = "../../grpc-client" }
