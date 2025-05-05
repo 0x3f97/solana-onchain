@@ -72,8 +72,8 @@ async fn main() -> Result<(), AppError> {
             "benchmark".to_string(),
             yellowstone_grpc_proto::geyser::SubscribeRequestFilterBlocks {
                 account_include: vec![],
-                include_transactions: Some(false), // 关闭交易数据以减小消息大小
-                include_accounts: Some(false),
+                include_transactions: Some(true),
+                include_accounts: Some(true),
                 include_entries: Some(false),
             },
         )]),
