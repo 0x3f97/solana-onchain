@@ -66,15 +66,17 @@ async fn main() -> Result<(), AppError> {
     let grpc = YellowstoneGrpc::new(url, None);
     let client = grpc.build_client().await?;
 
-    // 创建 Subscribe 请求，订阅 blocks - 减少数据量以避免消息太大
+    // 创建 Subscribe 请求，订阅 transactions 而不是 blocks
     let subscribe_request = SubscribeRequest {
-        blocks: HashMap::from([(
+        transactions: HashMap::from([(
             "benchmark".to_string(),
-            yellowstone_grpc_proto::geyser::SubscribeRequestFilterBlocks {
+            yellowstone_grpc_proto::geyser::SubscribeRequestFilterTransactions {
+                vote: Some(false),
+                failed: Some(false),
+                signature: None,
                 account_include: vec![],
-                include_transactions: Some(true),
-                include_accounts: Some(true),
-                include_entries: Some(false),
+                account_exclude: vec![],
+                account_required: vec![],
             },
         )]),
         commitment: Some(CommitmentLevel::Processed.into()),
@@ -92,11 +94,11 @@ async fn main() -> Result<(), AppError> {
         match message {
             Ok(msg) => {
                 match msg.update_oneof {
-                    Some(UpdateOneof::Block(block)) => {
-                        let grpc_slot = block.slot;
+                    Some(UpdateOneof::Transaction(transaction)) => {
+                        let grpc_slot = transaction.slot;
                         let current_http_slot = *http_slot_rx.borrow();
                         
-                        info!("[{}] gRPC Block slot: {}", Local::now().format("%H:%M:%S%.3f"), grpc_slot);
+                        info!("[{}] gRPC Transaction slot: {}", Local::now().format("%H:%M:%S%.3f"), grpc_slot);
                         info!("[{}] 当前 HTTP slot: {}", Local::now().format("%H:%M:%S%.3f"), current_http_slot);
                         
                         // 比较 HTTP 和 gRPC 的延迟
